@@ -1,0 +1,41 @@
+2026-04-28 07:18:31,829 | INFO | predictive_maintainence_logger | <cell line: 0> | dataset loaded successfully !!.
+2026-04-28 07:24:28,140 | INFO | predictive_maintainence_logger | <cell line: 0> | dataset loaded successfully !!.
+2026-04-28 07:26:59,883 | INFO | predictive_maintainence_logger | <cell line: 0> | Logger Initialized Successfully..
+2026-04-28 07:26:59,883 | INFO | predictive_maintainence_logger | <cell line: 0> | Logger Initialized Successfully..
+2026-04-28 07:27:27,799 | INFO | predictive_maintainence_logger | <cell line: 0> | dataset loaded successfully !!.
+2026-04-28 07:27:27,799 | INFO | predictive_maintainence_logger | <cell line: 0> | dataset loaded successfully !!.
+2026-04-28 07:31:12,579 | INFO | predictive_maintainence_logger | <cell line: 0> | Summary of DataSet Done .....
+2026-04-28 07:31:12,579 | INFO | predictive_maintainence_logger | <cell line: 0> | Summary of DataSet Done .....
+2026-04-28 07:32:19,590 | INFO | predictive_maintenance_logger | <cell line: 0> | Logger Initialized Successfully..
+2026-04-28 07:36:58,996 | INFO | predictive_maintenance_logger | <cell line: 0> | Logger Initialized Successfully..
+2026-04-28 07:36:58,996 | INFO | predictive_maintenance_logger | <cell line: 0> | Logger Initialized Successfully..
+2026-04-28 07:37:01,426 | INFO | predictive_maintenance_logger | <cell line: 0> | dataset loaded successfully !!.
+2026-04-28 07:37:01,426 | INFO | predictive_maintenance_logger | <cell line: 0> | dataset loaded successfully !!.
+2026-04-28 07:37:01,612 | INFO | predictive_maintenance_logger | <cell line: 0> | Summary of DataSet Done .....
+2026-04-28 07:37:01,612 | INFO | predictive_maintenance_logger | <cell line: 0> | Summary of DataSet Done .....
+2026-04-28 15:23:41,225 | INFO | predictive_maintenance_logger | <cell line: 0> | Logger Initialized Successfully..
+2026-04-28 15:24:06,834 | INFO | predictive_maintenance_logger | <cell line: 0> | dataset loaded successfully !!.
+2026-04-28 15:24:17,754 | INFO | predictive_maintenance_logger | <cell line: 0> | Summary of DataSet Done .....
+2026-04-28 16:28:59,605 | INFO | predictive_maintenance_logger | <cell line: 0> | Logger Initialized Successfully..
+2026-04-28 16:28:59,605 | INFO | predictive_maintenance_logger | <cell line: 0> | Logger Initialized Successfully..
+2026-04-28 16:29:02,265 | INFO | predictive_maintenance_logger | <cell line: 0> | dataset loaded successfully !!.
+2026-04-28 16:29:02,265 | INFO | predictive_maintenance_logger | <cell line: 0> | dataset loaded successfully !!.
+2026-04-28 16:29:02,514 | INFO | predictive_maintenance_logger | <cell line: 0> | Summary of DataSet Done .....
+2026-04-28 16:29:02,514 | INFO | predictive_maintenance_logger | <cell line: 0> | Summary of DataSet Done .....
+2026-04-28 17:21:04,875 | INFO | predictive_maintenance_logger | <cell line: 0> | UDI and product ID has dropped successfully..
+2026-04-28 17:21:04,875 | INFO | predictive_maintenance_logger | <cell line: 0> | UDI and product ID has dropped successfully..
+2026-04-28 17:21:14,246 | INFO | predictive_maintenance_logger | <cell line: 0> | UDI and product ID has dropped successfully..
+2026-04-28 17:21:14,246 | INFO | predictive_maintenance_logger | <cell line: 0> | UDI and product ID has dropped successfully..
+2026-04-28 18:03:27,218 | INFO | predictive_maintenance_logger | <cell line: 0> | UDI and product ID has dropped successfully..
+2026-04-28 18:03:27,218 | INFO | predictive_maintenance_logger | <cell line: 0> | UDI and product ID has dropped successfully..
+2026-04-28 18:03:31,784 | ERROR | predictive_maintenance_logger | <cell line: 0> | An error occurred during data preprocessing: name 'LabelEncoder' is not defined
+2026-04-28 18:03:31,784 | ERROR | predictive_maintenance_logger | <cell line: 0> | An error occurred during data preprocessing: name 'LabelEncoder' is not defined
+2026-04-28 18:05:02,019 | INFO | predictive_maintenance_logger | <cell line: 0> | Encoding + Z-Score Normalization + Train-test Split + DataLoaders done 
+2026-04-28 18:05:02,019 | INFO | predictive_maintenance_logger | <cell line: 0> | Encoding + Z-Score Normalization + Train-test Split + DataLoaders done 
+2026-04-28 18:07:54,298 | INFO | predictive_maintenance_logger | <cell line: 0> | Encoding + Z-Score Normalization + Train-test Split + DataLoaders done !!.
+2026-04-28 18:07:54,298 | INFO | predictive_maintenance_logger | <cell line: 0> | Encoding + Z-Score Normalization + Train-test Split + DataLoaders done !!.
+2026-04-28 18:27:52,463 | INFO | predictive_maintenance_logger | <cell line: 0> | Logger Initialized Successfully..
+2026-04-28 18:27:54,821 | INFO | predictive_maintenance_logger | <cell line: 0> | dataset loaded successfully !!.
+2026-04-28 18:27:55,078 | INFO | predictive_maintenance_logger | <cell line: 0> | Summary of DataSet Done .....
+2026-04-28 18:28:37,752 | INFO | predictive_maintenance_logger | <cell line: 0> | UDI and product ID has dropped successfully..
+2026-04-28 18:28:37,781 | INFO | predictive_maintenance_logger | <cell line: 0> | Encoding + Z-Score Normalization + Train-test Split + DataLoaders done !!.
