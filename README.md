@@ -27,6 +27,7 @@ This project demonstrates the application of deep learning in **Industry 4.0** a
 The complete implementation is provided in a single Google Colab notebook:
 
 📂 **Path:** `notebook/Predictive Maintenance for Industrial Milling Machines.ipynb`
+
 **dataset public url:** `https://drive.google.com/uc?id=1eUkf-j75o_OxDSSagL_CCEiMpflXS9rw`
 
 ### Steps to execute:
