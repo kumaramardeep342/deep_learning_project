@@ -68,10 +68,17 @@ os.environ["WANDB_API_KEY"] = "your_wandb_api_key"
 ## 📁 Repository Structure
 
 ```
+├── assests/
+├── data/
+├── logs/
 ├── notebook/
 │   └── Predictive Maintenance for Industrial Milling Machines.ipynb
-├── figures/
+├── utils/
+├── .gitignore/
+├── LICENSE/
 ├── README.md
+├── pyproject.toml/
+├── requirements.txt/
 ```
 
 ---
