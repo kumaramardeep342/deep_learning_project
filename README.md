@@ -54,8 +54,9 @@ You can directly view experiment results here:
 To enable logging:
 
 ```python
+from google.colab import userdata
 import os
-os.environ["WANDB_API_KEY"] = "your_wandb_api_key"
+os.environ["WANDB_API_KEY"] = userdata.get("WANDB_API_KEY")
 ```
 
 ⚠️ **Important:**
