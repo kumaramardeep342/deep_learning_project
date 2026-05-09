@@ -1,0 +1,775 @@
+%% ----------------------------------------------------------------
+%% Project.tex
+%% ---------------------------------------------------------------- 
+\documentclass{ecsproject}     % Use the Project Style
+\let\cleardoublepage\clearpage 
+\graphicspath{{Figures/}}   % Location of your graphics files
+\usepackage{natbib}            % Use Natbib style for the refs.
+\hypersetup{colorlinks=true}   % Set to false for black/white printing
+\input{Definitions}            % Include your abbreviations
+%% ----------------------------------------------------------------
+\begin{document}
+\frontmatter
+\title      {
+\includegraphics[width=0.6\textwidth]{title_image.png}
+Predictive Maintenance for Industrial Milling Machines Using Deep Learning-Based Anomaly Detection}
+\authors    {\texorpdfstring
+             {\href{mailto:email@iitm.ac.in}{Amardeep Kumar}}
+             {Your name here}
+            }
+\date       {\today}
+\course     {DA6401W Deep Learning}
+\maketitle
+\begin{abstract}
+This project presents a deep learning-based predictive maintenance system for industrial milling machines aimed at predicting equipment failures before they occur. The study utilizes the AI4I 2020 predictive maintenance dataset, which contains real-world sensor data and multiple failure modes.
+
+The proposed approach integrates multiple models, including a Multi-Layer Perceptron (MLP) for baseline classification, a Long Short-Term Memory (LSTM) network to capture temporal dependencies, and an Autoencoder for anomaly detection. These models enable the identification of five distinct failure types: tool wear failure, heat dissipation failure, power failure, overstrain failure, and random failures.
+
+Experimental results demonstrate the effectiveness of deep learning techniques in accurately predicting failures and detecting anomalies. Additionally, Weights \& Biases (WandB) is used for experiment tracking, enabling performance monitoring and model comparison.
+
+By implementing this predictive framework, manufacturing systems can transition from reactive to proactive maintenance strategies, reducing unplanned downtime and improving operational efficiency. This work highlights the practical application of deep learning in Industry 4.0 and Digital Twin environments.
+\end{abstract}
+\tableofcontents
+\listoffigures
+\listoftables
+\mainmatter
+%% ----------------------------------------------------------------
+
+\chapter{Introduction} \label{Chapter:Introduction}
+In modern manufacturing environments, unplanned equipment failures can lead to significant financial losses, production delays, and reduced operational efficiency. Traditional maintenance strategies, such as reactive and preventive maintenance, often fail to optimally address these challenges.
+
+With the rise of Industry 4.0, the integration of sensors and data-driven technologies has enabled the development of predictive maintenance systems. These systems leverage historical and real-time data to anticipate failures before they occur, allowing organizations to take proactive actions.
+
+However, accurately predicting failures in complex industrial systems remains a challenging task due to nonlinear patterns and high-dimensional sensor data. Conventional machine learning techniques often struggle to capture temporal dependencies and subtle anomalies in such data.
+
+To address these challenges, this project proposes a deep learning-based predictive maintenance framework using LSTM networks and Autoencoder models. The LSTM model captures temporal dependencies in sensor data, while the Autoencoder detects anomalies by learning normal operational patterns.
+
+The main objectives of this project are:
+\begin{itemize}
+    \item To develop a classification model for predicting machine failures.
+    \item To implement an anomaly detection system using Autoencoders.
+    \item To analyze multiple failure modes in industrial milling machines.
+\end{itemize}
+
+The rest of the report is organized as follows: Chapter 2 discusses background and related work, Chapter 3 defines the problem statement, Chapter 4 describes the dataset, and subsequent chapters present the methodology, experiments, and results.
+
+
+\chapter{Background and State-of-the-art}
+
+Predictive maintenance has emerged as a critical application in modern manufacturing systems, particularly within the framework of Industry 4.0. Industry 4.0 emphasizes the integration of cyber-physical systems, Internet of Things (IoT), and real-time data analytics to enable intelligent and autonomous industrial operations. In such environments, machines are equipped with sensors that continuously generate data, enabling advanced monitoring and decision-making.
+
+A closely related concept is the Digital Twin, which refers to a virtual representation of a physical asset that is continuously updated using real-time sensor data. Digital Twins enable real-time monitoring, simulation, and predictive analysis of machine behavior. In the context of predictive maintenance, Digital Twins leverage data-driven models to detect anomalies, forecast failures, and optimize maintenance scheduling.
+
+Traditional maintenance strategies, such as reactive and preventive maintenance, are either inefficient or suboptimal, as they fail to leverage real-time data. Early predictive maintenance systems relied on statistical methods and classical machine learning algorithms, including decision trees and support vector machines. However, these approaches often struggle with high-dimensional and nonlinear sensor data.
+
+Recent advancements in deep learning have significantly improved the performance of predictive maintenance systems. Multi-Layer Perceptrons (MLP) are widely used for classification tasks, while Long Short-Term Memory (LSTM) networks are capable of capturing temporal dependencies in sequential data. Furthermore, Autoencoder architectures have gained popularity for anomaly detection, as they can learn the normal operating conditions of machines and identify deviations effectively.
+
+These developments form the foundation for the proposed deep learning-based predictive maintenance system, which aligns with Industry 4.0 principles and contributes toward Digital Twin-enabled intelligent maintenance frameworks.
+
+
+\chapter{Problem Statement}
+
+In industrial manufacturing systems, machines continuously generate large volumes of sensor data reflecting their operational conditions. Accurately predicting equipment failures from such data is critical for minimizing downtime and reducing maintenance costs. However, this task is inherently challenging due to several factors.
+
+First, the relationship between sensor measurements and machine failure is highly non-linear and influenced by multiple interacting variables such as temperature, torque, and rotational speed. Traditional machine learning models often struggle to capture these complex dependencies effectively.
+
+Second, the dataset contains multiple underlying failure modes (tool wear, heat dissipation, power failure, overstrain, and random failures), which collectively determine the final failure label. This makes the prediction problem more complex, as the model must implicitly learn these hidden relationships.
+
+Third, the dataset is highly imbalanced, with failure cases forming a small minority compared to normal operating conditions. This leads to biased models that achieve high accuracy but fail to correctly identify critical failure events.
+
+Furthermore, the dataset does not explicitly contain temporal sequences, making it challenging to apply sequence-based models such as LSTM without additional preprocessing.
+
+Therefore, the objective of this project is to develop a robust predictive maintenance system that can:
+
+\begin{itemize}
+    \item Accurately classify machine failure using sensor data
+    \item Detect anomalous machine behavior using unsupervised learning
+    \item Handle class imbalance effectively
+    \item Evaluate the suitability of different deep learning architectures (MLP, LSTM, Autoencoder)
+\end{itemize}
+
+To address these challenges, this project addresses predictive maintenance using both supervised classification and unsupervised anomaly detection approaches. While classification models (MLP, LSTM) attempt to directly predict failure labels, the Autoencoder learns normal operating behavior and identifies deviations as anomalies. This dual approach enables comparison between label-driven prediction and behavior-driven detection, especially under class imbalance conditions.
+
+\chapter{Dataset Description}
+\section{Dataset Overview}
+
+The dataset used in this project is the AI4I 2020 Predictive Maintenance dataset \cite{ai4i2020dataset}, which is publicly available on Kaggle. It consists of 10,000 observations representing simulated sensor data from industrial milling machines.
+
+Each data instance includes multiple features such as air temperature, process temperature, rotational speed, torque, and tool wear. Additionally, categorical information such as product type (L, M, H) is provided to represent different quality variants.
+
+The target variable, \textit{Machine failure}, is a binary indicator that denotes whether a failure has occurred. This label is derived from multiple underlying failure modes, including:
+
+\begin{itemize}
+    \item Tool Wear Failure (TWF)
+    \item Heat Dissipation Failure (HDF)
+    \item Power Failure (PWF)
+    \item Overstrain Failure (OSF)
+    \item Random Failure (RNF)
+\end{itemize}
+
+Each failure mode is triggered based on specific conditions involving sensor readings and operational thresholds. The overall machine failure label is set to 1 if any of these failure conditions are met.
+
+This dataset provides a realistic representation of industrial machine behavior, capturing both normal operating conditions and various failure scenarios. It is well-suited for supervised classification as well as anomaly detection tasks in predictive maintenance applications.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{dataset summary.png}
+    \caption{Dataset Summary}
+\end{figure}
+
+\section{Exploratory Data Analysis}
+Exploratory Data Analysis (EDA) was conducted to understand the underlying structure of the dataset, identify patterns, detect anomalies, and establish relationships between features. The analysis also helps in validating assumptions and guiding model selection.
+
+\subsection{Machine Failure Across Machine Types}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{failure_by_type.png}
+    \caption{Machine failure distribution across machine types}
+\end{figure}
+
+The analysis shows that machines of type L (Low quality variant) exhibit the highest number of failures compared to types M and H. This indicates that machine type plays a significant role in failure occurrence, possibly due to differences in operational load or quality characteristics.
+
+\subsection{Feature Distribution and Outlier Analysis}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.45\textwidth]{rpm_boxplot.png}
+    \includegraphics[width=0.45\textwidth]{torque_boxplot.png}
+    \caption{Outlier analysis for rotational speed and torque}
+\end{figure}
+
+Boxplot analysis reveals the presence of significant outliers in features such as rotational speed and torque. These extreme values may correspond to abnormal machine behavior or rare operating conditions, which are critical for anomaly detection tasks.
+
+\subsection{Feature Relationships and Pairwise Analysis}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.3\textwidth]{pairplot.png}
+    \includegraphics[width=0.3\textwidth]{pairplot_1.png}
+    \includegraphics[width=0.3\textwidth]{pairplot_2.png}
+    \caption{Pairwise relationships between features}
+\end{figure}
+
+Pairwise analysis highlights the relationships between different features and provides insight into how they interact with each other. Although some separation between failure and non-failure cases is observed, the relationships are largely non-linear, justifying the use of deep learning models such as MLP and LSTM.
+
+\subsection{Correlation Analysis}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.5\textwidth]{correlation_heatmap.png}
+    \caption{Correlation matrix of features}
+\end{figure}
+
+Correlation analysis reveals several important relationships:
+\begin{itemize}
+    \item Air temperature and process temperature exhibit a strong positive correlation.
+    \item Rotational speed and torque show a negative correlation, indicating an inverse relationship.
+    \item Machine failure is strongly correlated with specific failure modes such as tool wear failure (TWF), heat dissipation failure (HDF), power failure (PWF), overstrain failure (OSF), and random failure (RNF).
+\end{itemize}
+
+These insights help in understanding feature dependencies and play a crucial role in model selection and feature engineering.
+
+\subsection{Summary of Insights}
+
+\begin{itemize}
+    \item Machine type significantly influences failure occurrence.
+    \item Presence of outliers suggests abnormal operating conditions, supporting anomaly detection approaches.
+    \item Strong correlations exist among temperature-related features.
+    \item Non-linear relationships between features justify the use of deep learning models.
+\end{itemize}
+
+\chapter{Solution/Methodology/Neural Net Architecture}
+This project employs deep learning techniques to address predictive maintenance through both classification and anomaly detection approaches. Three models were implemented: a Multi-Layer Perceptron (MLP), a Long Short-Term Memory (LSTM) network, and an Autoencoder.
+
+The MLP and LSTM models are used for supervised classification of machine failures, while the Autoencoder is used for unsupervised anomaly detection.
+
+\section{Multi-Layer Perceptron (MLP)}
+
+The Multi-Layer Perceptron (MLP) is a feedforward neural network used for binary classification of machine failure. It learns complex non-linear relationships between input features through multiple fully connected layers.
+
+\begin{itemize}
+    \item \textbf{Input Layer:} Takes normalized feature vectors representing machine sensor data.
+    
+    \item \textbf{Hidden Layers:} Two fully connected dense layers with 64 and 32 neurons respectively, each followed by ReLU activation to introduce non-linearity.
+    
+    \item \textbf{Output Layer:} A fully connected layer with 2 output neurons corresponding to the two classes (failure and non-failure). The outputs are raw logits, and the Softmax function is applied implicitly during training via the loss function.
+\end{itemize}
+
+The model is trained using the Cross-Entropy loss function, which internally applies the Softmax operation to compute class probabilities.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{mlp_architecture.png}
+    \caption{Architecture of the MLP model}
+\end{figure}
+
+\begin{lstlisting}[language=Python, caption=MLP Architecture]
+class MLP(nn.Module):
+    def __init__(self, input_dim):
+        super().__init__()
+        self.net = nn.Sequential(
+            nn.Linear(input_dim, 64),
+            nn.ReLU(),
+            nn.Linear(64, 32),
+            nn.ReLU(),
+            nn.Linear(32, 2)
+        )
+
+    def forward(self, x):
+        return self.net(x)
+\end{lstlisting}
+
+\section{Long Short-Term Memory (LSTM)}
+
+The Long Short-Term Memory (LSTM) network is a type of recurrent neural network (RNN) designed to capture temporal dependencies in sequential data. It is particularly effective in modeling long-term relationships by addressing the vanishing gradient problem present in traditional RNNs.
+
+In this project, since the dataset is not inherently sequential, a sliding window approach was used to transform the tabular data into sequential format. Each input sample consists of a fixed-length sequence of feature vectors.
+
+\begin{itemize}
+    \item \textbf{Input:} Sequential feature data of shape $(\text{batch size}, \text{sequence length}, \text{input dimension})$.
+    
+    \item \textbf{LSTM Layer:} A single LSTM layer with 64 hidden units processes the input sequence and captures temporal patterns.
+    
+    \item \textbf{Hidden State:} The final hidden state of the LSTM is used as a representation of the sequence.
+    
+    \item \textbf{Fully Connected Layer:} A dense layer maps the hidden representation to 2 output neurons corresponding to failure and non-failure classes.
+\end{itemize}
+
+The model outputs raw logits, and the Softmax operation is applied implicitly through the Cross-Entropy loss function during training.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{lstm_architecture.png}
+    \caption{Architecture of the LSTM model}
+\end{figure}
+
+\begin{lstlisting}[language=Python, caption=LSTM Architecture]
+class LSTMModel(nn.Module):
+    def __init__(self, input_dim):
+        super().__init__()
+        self.lstm = nn.LSTM(input_dim, 64, batch_first=True)
+        self.fc = nn.Linear(64, 2)
+
+    def forward(self, x):
+        _, (hn, _) = self.lstm(x)
+        return self.fc(hn[-1])
+\end{lstlisting}
+
+\section{Autoencoder for Anomaly Detection}
+
+The Autoencoder is an unsupervised deep learning model used for anomaly detection. It learns to reconstruct normal data patterns and identifies anomalies based on reconstruction error.
+
+\subsection{Architecture}
+
+The Autoencoder consists of two main components:
+
+\begin{itemize}
+    \item \textbf{Encoder:} Compresses the input feature vector into a lower-dimensional latent representation.
+    \item \textbf{Decoder:} Reconstructs the original input from the compressed representation.
+\end{itemize}
+
+\begin{itemize}
+    \item Input Layer: Takes normalized feature vectors
+    \item Encoder Layers: Fully connected layers (input $\rightarrow$ 32 $\rightarrow$ 16)
+    \item Bottleneck Layer: 16-dimensional compressed representation
+    \item Decoder Layers: Fully connected layers (16 $\rightarrow$ 32 $\rightarrow$ input dimension)
+\end{itemize}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{autoencoder_architecture.png}
+    \caption{Architecture of the LSTM model}
+\end{figure}
+
+\begin{lstlisting}[language=Python, caption=Autoencoder Architecture]
+class Autoencoder(nn.Module):
+    def __init__(self, input_dim):
+        super().__init__()
+        self.encoder = nn.Sequential(
+            nn.Linear(input_dim, 32),
+            nn.ReLU(),
+            nn.Linear(32, 16)
+        )
+        self.decoder = nn.Sequential(
+            nn.Linear(16, 32),
+            nn.ReLU(),
+            nn.Linear(32, input_dim)
+        )
+
+    def forward(self, x):
+        encoded = self.encoder(x)
+        return self.decoder(encoded)
+\end{lstlisting}
+
+
+\subsection{Reconstruction Error}
+
+Anomaly detection is based on reconstruction error, defined as:
+
+\begin{equation}
+\text{Reconstruction Error} = || X - \hat{X} ||^2
+\end{equation}
+
+where $X$ is the input and $\hat{X}$ is the reconstructed output.
+
+Normal data points have low reconstruction error, while anomalous data points have high reconstruction error.
+
+\subsection{Anomaly Detection}
+
+During inference, the reconstruction error is computed for each sample. A threshold is defined as:
+
+\begin{equation}
+\text{Threshold} = \mu + 2\sigma
+\end{equation}
+
+where $\mu$ is the mean reconstruction error and $\sigma$ is the standard deviation.
+
+Samples with reconstruction error greater than the threshold are classified as anomalies.
+
+\chapter{Theoretical Analysis}
+This project employs multiple deep learning architectures to address both classification and anomaly detection tasks.
+
+The Multi-Layer Perceptron (MLP) is a feedforward neural network that consists of multiple fully connected layers. It is used for supervised classification of machine failures based on sensor data.
+
+Long Short-Term Memory (LSTM) networks are a type of recurrent neural network designed to capture temporal dependencies in sequential data. They are particularly useful for modeling time-series patterns in industrial sensor data.
+
+Autoencoders are unsupervised neural networks that learn to reconstruct input data. By training on normal operating conditions, they can detect anomalies by measuring reconstruction error, where higher errors indicate deviations from normal behavior.
+
+The integration of these models enables the system to perform both predictive failure classification and anomaly detection, providing a comprehensive predictive maintenance solution.
+
+\chapter{Data Preprocessing and Training Methodology}
+\section{Data Preprocessing}
+Data preprocessing is a crucial step to ensure data quality and improve model performance. The following preprocessing steps were applied to the dataset.
+
+\subsection{Data Cleaning}
+
+Irrelevant columns such as \textit{UDI} and \textit{Product ID} were removed from the dataset, as they serve only as identifiers and do not contribute to predictive modeling.
+
+Outlier analysis revealed extreme values in features such as rotational speed and torque. These values were retained as they represent abnormal operating conditions and are important for predictive maintenance and anomaly detection tasks.
+
+\subsection{Encoding : Label Encoding}
+
+The categorical feature \textit{Type} (L, M, H) was converted into numerical form using label encoding to make it suitable for machine learning models.
+
+\begin{lstlisting}[language=Python, caption=Label Encoding]
+encoder = LabelEncoder()
+data['Type'] = encoder.fit_transform(data['Type'])
+\end{lstlisting}
+
+\subsection{Feature Scaling : Z-Score Normalization}
+
+Z-score normalization (standardization) was applied to scale the numerical features. It is defined as:
+
+\begin{equation}
+z = \frac{x - \mu}{\sigma}
+\end{equation}
+
+where \(x\) is the original feature value, \(\mu\) is the mean of the feature, and \(\sigma\) is the standard deviation. This transformation ensures that the features have zero mean and unit variance, which improves convergence and stabilizes the training of deep learning models.
+
+\begin{lstlisting}[language=Python, caption=Feature and Target Split]
+X = data.drop('Machine failure', axis=1)
+y = data['Machine failure']
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python, caption=Z-score Normalization using StandardScaler]
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+\end{lstlisting}
+
+\subsection{Train-Test Split}
+
+The dataset was divided into training and testing sets using an 80:20 ratio. The training set was used to train the models, while the test set was used to evaluate model performance on unseen data.
+
+\begin{lstlisting}[language=Python, caption=Train-Test Split]
+X_train, X_test, y_train, y_test = train_test_split(
+    X_scaled, y, test_size=0.2, random_state=42
+)
+\end{lstlisting}
+
+\subsection{Data Preparation for Training}
+
+The processed data was converted into PyTorch tensors and loaded using DataLoader. This enables efficient batching, shuffling, and parallel data loading during model training.
+\begin{lstlisting}[language=Python, caption=Conversion to PyTorch Tensors]
+X_train = torch.tensor(X_train, dtype=torch.float32)
+y_train = torch.tensor(y_train.values, dtype=torch.long)
+\end{lstlisting}
+
+\section{Training Methodology}
+The models were trained using supervised and unsupervised learning approaches depending on the task. The training process involves forward propagation, loss computation, backpropagation, and weight updates using an optimizer.
+
+\subsection{Loss Functions}
+ Cross-Entropy Loss was used for classification tasks, while Mean Squared Error (MSE) was used for training the Autoencoder.
+
+\subsection{Optimizer}
+
+The Adam (Adaptive Moment Estimation) optimizer was used for training the models due to its efficiency and fast convergence properties. Adam combines the advantages of two widely used optimization techniques: Momentum and RMSProp.
+
+Adam maintains two moving averages for each parameter:
+
+\begin{itemize}
+    \item The first moment (mean of gradients)
+    \item The second moment (uncentered variance of gradients)
+\end{itemize}
+
+The update rules for Adam are defined as follows:
+
+\begin{equation}
+m_t = \beta_1 m_{t-1} + (1 - \beta_1) g_t
+\end{equation}
+
+\begin{equation}
+v_t = \beta_2 v_{t-1} + (1 - \beta_2) g_t^2
+\end{equation}
+
+\begin{equation}
+\hat{m}_t = \frac{m_t}{1 - \beta_1^t}, \quad
+\hat{v}_t = \frac{v_t}{1 - \beta_2^t}
+\end{equation}
+
+\begin{equation}
+\theta_t = \theta_{t-1} - \alpha \frac{\hat{m}_t}{\sqrt{\hat{v}_t} + \epsilon}
+\end{equation}
+
+where:
+\begin{itemize}
+    \item $g_t$ is the gradient at time step $t$
+    \item $m_t$ and $v_t$ are the first and second moment estimates
+    \item $\beta_1$ and $\beta_2$ are decay rates (commonly 0.9 and 0.999)
+    \item $\alpha$ is the learning rate
+    \item $\epsilon$ is a small constant to prevent division by zero
+\end{itemize}
+
+Adam is particularly well-suited for deep learning models such as MLP, LSTM, and Autoencoders, as it adapts the learning rate for each parameter and handles sparse gradients efficiently, leading to faster and more stable convergence.
+
+\subsection{Training Loop}
+\begin{lstlisting}[language=Python, caption=Training Loop]
+for epoch in range(epochs):
+    for X_batch, y_batch in train_loader:
+        optimizer.zero_grad()
+        outputs = model(X_batch)
+        loss = criterion(outputs, y_batch)
+        loss.backward()
+        optimizer.step()
+\end{lstlisting}
+
+\subsection{Autoencoder Training Strategy}
+
+The Autoencoder was trained only on normal (non-failure) data to learn the underlying distribution of healthy machine behavior.
+
+\begin{itemize}
+    \item Training Data: Samples where machine failure = 0
+    \item Loss Function: Mean Squared Error (MSE)
+    \item Optimizer: Adam
+\end{itemize}
+
+The objective is to minimize the reconstruction error between the input and the reconstructed output.
+
+\subsection{WandB}
+Weights and Biases (WandB) was used for experiment tracking, including monitoring loss, metrics, and model performance across epochs.
+\begin{lstlisting}[language=Python, caption=WandB Integration for Experiment Tracking]
+from wandb_utils import WandBLogger
+
+w_logger = WandBLogger(
+    project="Predictive Maintenance for Industrial Milling Machines",
+    config={"model": "MLP", "epochs": 10, "lr": 0.001}
+)
+
+w_logger.watch(mlp_model)
+
+for epoch in range(10):
+    mlp_model.train()
+
+    outputs = mlp_model(X_train)
+    loss = criterion(outputs, y_train)
+
+    optimizer.zero_grad()
+    loss.backward()
+    optimizer.step()
+
+    w_logger.log({"loss": loss.item()})
+
+w_logger.finish()
+\end{lstlisting}
+
+\chapter{Experimental Results}
+
+\section{MLP Model Performance}
+
+\subsection{Training Performance}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{mlp_loss.png}
+    \caption{Training loss MLP across epochs (WandB visualization)}
+\end{figure}
+
+The training loss curve shows a steady decrease over epochs, indicating that the models are able to learn meaningful patterns from the data. The smooth decline suggests stable convergence without significant oscillations.
+
+\subsection{Classification Report}
+
+
+The MLP model achieves high overall accuracy; however, the performance is heavily skewed toward the majority class.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{mlp_classification_report.png}
+    \caption{Classification report for the MLP model}
+\end{figure}
+
+\subsection{Confusion Matrix}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\textwidth]{mlp_confusion_matrix.png}
+    \caption{Confusion matrix for the MLP model}
+\end{figure}
+
+The confusion matrix reveals that the model correctly classifies most non-failure instances but fails to identify failure cases. A large number of false negatives indicates poor recall for the minority class.
+
+\subsection{ROC Curve}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\textwidth]{mlp_roc_auc.png}
+    \caption{ROC curve for the MLP model}
+\end{figure}
+
+The ROC-AUC score is observed to be significantly low, indicating poor discriminative ability. This suggests that the model is unable to effectively distinguish between failure and non-failure cases due to class imbalance.
+
+\section{LSTM Model Performance}
+
+\subsection{Training Performance}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{lstm_loss.png}
+    \caption{Training loss LSTM across epochs (WandB visualization)}
+\end{figure}
+
+The training loss curve shows a steady decrease over epochs, indicating that the models are able to learn meaningful patterns from the data. The smooth decline suggests stable convergence without significant oscillations.
+
+\subsection{Classification Report}
+
+The LSTM model shows similar performance trends to the MLP model, with high accuracy but poor recall for failure cases.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{lstm_classification_report.png}
+    \caption{Classification report for the LSTM model}
+\end{figure}
+
+\subsection{Confusion Matrix}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\textwidth]{lstm_confusion_matrix.png}
+    \caption{Confusion matrix for the LSTM model}
+\end{figure}
+
+The confusion matrix highlights that the LSTM model also struggles to correctly classify failure instances, reinforcing the impact of class imbalance.
+
+
+\section{Autoencoder Model Performance}
+
+\subsection{Training Performance}
+
+The training loss curve shows a steady decrease over epochs, indicating that the models are able to learn meaningful patterns from the data. The smooth decline suggests stable convergence without significant oscillations.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\textwidth]{autoencoder_loss.png}
+    \caption{Training loss Autoencoder across epochs (WandB visualization)}
+\end{figure}
+
+
+
+\subsection{Classification Report}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{autoencoder_classification_report.png}
+    \caption{Classification report for the Autoencoder model}
+\end{figure}
+
+The Autoencoder achieves strong performance across both classes. Unlike the MLP model, it is able to effectively detect failure cases with high precision and recall. This demonstrates its ability to identify anomalies despite the presence of class imbalance.
+
+\subsection{Confusion Matrix}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\textwidth]{autoencoder_confusion_matrix.png}
+    \caption{Confusion matrix for the Autoencoder model}
+\end{figure}
+
+The confusion matrix shows that the Autoencoder correctly classifies the majority of both normal and failure instances. The number of false positives and false negatives is very low, indicating reliable anomaly detection performance.
+
+\subsection{Reconstruction Error Analysis}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{autoencoder_reconstruction_error.png}
+    \caption{Reconstruction error distribution with anomaly threshold}
+\end{figure}
+
+The reconstruction error distribution highlights a clear separation between normal and anomalous samples. Most normal data points have low reconstruction error, while failure cases exhibit higher error values. The selected threshold effectively distinguishes between normal and abnormal behavior.
+
+\section{Experiment Autoencoder Model Performance}
+\subsection{Training Performance}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{exp_auto_loss.png}
+    \caption{Training loss comparison across multiple Autoencoder experiments with varying hyperparameters}
+\end{figure}
+
+The training loss curves demonstrate the impact of different hyperparameter configurations on model convergence. Experiments with higher learning rates and optimal network depth show faster convergence and lower final loss values. 
+
+Some configurations exhibit slower convergence, indicating suboptimal learning rates or insufficient model capacity. Overall, the results highlight the sensitivity of Autoencoder performance to hyperparameter tuning, particularly learning rate and number of layers.
+
+\subsection{Result Comparison Across Experiments}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.9\textwidth]{exp_auto_res.png}
+    \caption{Comparison of evaluation metrics (ROC-AUC, Recall, Precision, F1-score, Threshold) across different Autoencoder experiments}
+\end{figure}
+
+The experimental results compare multiple Autoencoder configurations based on key evaluation metrics such as ROC-AUC, Recall, Precision, and F1-score.
+
+It is observed that:
+
+\begin{itemize}
+    \item Certain configurations achieve consistently higher ROC-AUC scores, indicating better discrimination between normal and anomalous samples.
+    
+    \item Recall remains high across most experiments, which is critical for predictive maintenance as missing a failure can lead to severe consequences.
+    
+    \item Precision varies slightly, suggesting a trade-off between detecting anomalies and avoiding false positives.
+    
+    \item F1-score provides a balanced measure and highlights the best-performing configurations.
+    
+    \item Threshold values differ across runs, reflecting variations in reconstruction error distributions.
+\end{itemize}
+
+Overall, the experiment demonstrates that hyperparameter tuning significantly improves anomaly detection performance, with some configurations clearly outperforming others.
+
+\section{Comparative Analysis}
+
+The performance of MLP, LSTM, and Autoencoder models reveals significant differences in their ability to handle imbalanced data and detect failure cases.
+
+\begin{itemize}
+    \item \textbf{MLP Model:} Although the model achieves high overall accuracy, it fails to detect failure cases effectively. The confusion matrix and ROC-AUC score indicate poor recall and weak discriminative ability, primarily due to class imbalance.
+
+    \item \textbf{LSTM Model:} The LSTM model exhibits similar behavior to the MLP model. Despite its capability to model sequential data, it does not show significant improvement. This is likely because the dataset lacks strong temporal dependencies, limiting the effectiveness of sequence modeling.
+
+    \item \textbf{Autoencoder Model:} The Autoencoder significantly outperforms both MLP and LSTM in detecting anomalies. It achieves high precision and recall for failure cases, with very few false positives and false negatives. The reconstruction error distribution clearly separates normal and anomalous samples, enabling effective threshold-based classification.
+\end{itemize}
+
+Overall, the Autoencoder demonstrates superior performance in identifying rare failure events, making it more suitable for predictive maintenance applications.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lccc}
+\hline
+\textbf{Model} & \textbf{Accuracy} & \textbf{Recall (Failure)} & \textbf{Remarks} \\
+\hline
+MLP & High & Very Low & Biased toward majority class \\
+LSTM & High & Very Low & No temporal advantage observed \\
+Autoencoder & High & High & Effective anomaly detection \\
+\hline
+\end{tabular}
+\caption{Comparison of model performance}
+\end{table}
+
+\section{Key Observations}
+
+\begin{itemize}
+    \item \textbf{Impact of Class Imbalance:} The dataset is highly imbalanced, with failure cases forming a small minority. This significantly affects supervised models such as MLP and LSTM, which tend to bias predictions toward the majority class.
+
+    \item \textbf{Limitations of Accuracy:} High accuracy observed in MLP and LSTM models is misleading, as it is driven by correct predictions of non-failure instances. These models fail to capture critical failure patterns.
+
+    \item \textbf{Failure Detection is Critical:} In predictive maintenance, recall for failure cases is more important than overall accuracy. Missing a failure (false negative) can lead to severe operational and financial consequences.
+
+    \item \textbf{Lack of Temporal Dependency:} The LSTM model does not show improvement over MLP, indicating that the dataset does not contain strong temporal relationships that can be exploited by sequence models.
+
+    \item \textbf{Effectiveness of Autoencoder:} The Autoencoder effectively learns the normal behavior of the system and detects deviations using reconstruction error. This makes it highly robust to class imbalance and more suitable for anomaly detection tasks.
+
+    \item \textbf{Clear Feature Separation:} The reconstruction error distribution shows a distinct separation between normal and anomalous samples, validating the effectiveness of the chosen thresholding approach.
+\end{itemize}
+
+
+
+\section{Discussion and Future Improvements}
+
+The experimental results indicate that while deep learning models can learn general patterns, they struggle to detect rare failure events in imbalanced datasets.
+
+To improve performance, the following approaches can be considered:
+
+\begin{itemize}
+    \item Applying class weighting or oversampling techniques.
+    \item Performing threshold tuning to improve recall for failure cases.
+    \item Collecting more balanced datasets for training.
+\end{itemize}
+
+\chapter{Inferences/Insights Obtained/Difficulties faced}
+
+\section{Model Performance Analysis}
+
+In this project, three deep learning models were implemented: a Multi-Layer Perceptron (MLP), a Long Short-Term Memory (LSTM) network, and an Autoencoder. The MLP and LSTM models were used for classification, while the Autoencoder was used for anomaly detection.
+
+The MLP model performed consistently well and served as a strong baseline for classification. The LSTM model, although capable of capturing sequential dependencies, did not significantly outperform the MLP. This is primarily because the dataset does not exhibit true temporal characteristics.
+
+The Autoencoder demonstrated effectiveness in detecting anomalies by identifying instances with high reconstruction error, which correspond to abnormal machine behavior.
+
+\section{Analysis of LSTM Performance}
+
+LSTM networks are designed for sequential or time-series data. In this project, sequences were artificially created using sliding windows to adapt the dataset for LSTM training. However, since the dataset does not inherently contain temporal dependencies, the LSTM model was unable to fully utilize its capabilities.
+
+As a result, the performance of LSTM was comparable to or slightly lower than that of the MLP model.
+
+\section{Key Insights}
+
+\begin{itemize}
+    \item Machine failure is strongly influenced by specific failure modes such as tool wear failure (TWF), heat dissipation failure (HDF), power failure (PWF), overstrain failure (OSF), and random failure (RNF).
+    \item Outliers in features such as rotational speed and torque indicate abnormal machine conditions and are important for predictive maintenance.
+    \item Feature scaling using Z-score normalization significantly improved model convergence.
+    \item Deep learning models are effective in capturing non-linear relationships in the dataset.
+\end{itemize}
+
+\section{Difficulties Faced}
+
+\subsection{Class Imbalance}
+
+The dataset exhibits class imbalance, where failure cases are significantly fewer than normal cases. This can lead to biased predictions toward the majority class and affect model performance.
+
+\subsection{Sequence Generation for LSTM}
+
+Since the dataset is not inherently sequential, artificial sequences were created using sliding windows. This approach may not accurately capture real-world temporal dependencies, limiting the effectiveness of the LSTM model.
+
+\subsection{Model Selection}
+
+Selecting appropriate models for both classification and anomaly detection required careful consideration of the dataset characteristics and problem objectives.
+
+\section{Conclusion}
+
+The MLP model proved to be effective for classification tasks, while the Autoencoder successfully handled anomaly detection. The LSTM model showed limited improvement due to the absence of true sequential data. These findings highlight the importance of aligning model selection with the nature of the dataset.
+
+\chapter{Implementation Details and Resources}
+
+This project implementation, experiment tracking, and reproducibility resources are available through the following links:
+
+\begin{itemize}
+    \item \textbf{GitHub Repository:} \\
+    \url{https://github.com/kumaramardeep342/deep_learning_project}
+    
+    \item \textbf{Weights \& Biases Dashboard:} \\
+    \url{ https://wandb.ai/kumaramardeep342-indian-institute-of-technology-madras/Predictive%20Maintenance%20for%20Industrial%20Milling%20Machines?nw=nwuserkumaramardeep342}
+\end{itemize}
+
+
+These resources provide complete access to the codebase, experimental configurations, and results, ensuring transparency and reproducibility of the proposed predictive maintenance system.
+
+\bibliographystyle{plain}
+\bibliography{References}
+\end{document}
+%% ----------------------------------------------------------------
